@@ -16,6 +16,7 @@ var properties = struct {
 func main() {
 	// tracing
 	closer, err := tracing.Initialize(
+		tracing.WithServiceName("mutual-exclusion"),
 		tracing.WithSamplerType(tracing.ConstantSampler),
 		tracing.WithSamplerParam(1.0),
 		tracing.WithEndpoint("http://jaeger-collector.lvh.me/api/traces"),
