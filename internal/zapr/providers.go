@@ -1,7 +1,7 @@
 //go:build wireinject
 // +build wireinject
 
-package zap
+package zapr
 
 import (
 	"github.com/google/wire"
@@ -9,6 +9,4 @@ import (
 
 var Providers = wire.NewSet(
 	NewLogger,
-	NewConfig,
-	NewEncoderConfig,
 )

@@ -4,11 +4,11 @@
 package main
 
 import (
+	"github.com/go-logr/logr"
 	"github.com/google/wire"
-	"go.uber.org/zap"
 )
 
-func NewLogger() (*zap.Logger, error) {
+func NewLogger() (logr.Logger, error) {
 	wire.Build(providers.Set)
-	return nil, nil
+	return logr.Logger{}, nil
 }

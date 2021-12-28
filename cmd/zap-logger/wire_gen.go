@@ -14,7 +14,9 @@ import (
 // Injectors from wire.go:
 
 func NewLogger() (*zap.Logger, error) {
-	logger, err := zap2.NewLogger()
+	encoderConfig := zap2.NewEncoderConfig()
+	config := zap2.NewConfig(encoderConfig)
+	logger, err := zap2.NewLogger(config)
 	if err != nil {
 		return nil, err
 	}
