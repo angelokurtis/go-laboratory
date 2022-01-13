@@ -1,9 +1,13 @@
 package main
 
-import defaultLog "log"
+import (
+	defaultLog "log"
+
+	"github.com/angelokurtis/go-laboratory/internal/wire"
+)
 
 func main() {
-	log, err := NewLogger()
+	log, err := wire.ZapLogger()
 	dieOnError(err)
 
 	log.Info("ha!")
