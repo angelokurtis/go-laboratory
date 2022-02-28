@@ -7,10 +7,12 @@
 package wire
 
 import (
+	"github.com/angelokurtis/go-laboratory/internal/k8s"
 	zap2 "github.com/angelokurtis/go-laboratory/internal/zap"
 	"github.com/angelokurtis/go-laboratory/internal/zapr"
 	"github.com/go-logr/logr"
 	"go.uber.org/zap"
+	"k8s.io/client-go/dynamic"
 )
 
 // Injectors from injectors.go:
@@ -34,4 +36,10 @@ func LogrLogger() (logr.Logger, error) {
 	}
 	logrLogger := zapr.NewLogger(logger)
 	return logrLogger, nil
+}
+
+func DynamicClient() (dynamic.Interface, error) {
+	config := k8s.NewConfig()
+	dynamicInterface := k8s.NewDynamicClient(config)
+	return dynamicInterface, nil
 }
