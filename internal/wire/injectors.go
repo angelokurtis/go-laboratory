@@ -8,6 +8,8 @@ import (
 	"github.com/google/wire"
 	"go.uber.org/zap"
 	"k8s.io/client-go/dynamic"
+
+	"github.com/angelokurtis/go-laboratory/internal/kustomize"
 )
 
 func ZapLogger() (*zap.Logger, error) {
@@ -21,6 +23,11 @@ func LogrLogger() (logr.Logger, error) {
 }
 
 func DynamicClient() (dynamic.Interface, error) {
+	wire.Build(Providers)
+	return nil, nil
+}
+
+func KustomizeClient() (*kustomize.Client, error) {
 	wire.Build(Providers)
 	return nil, nil
 }

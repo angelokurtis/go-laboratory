@@ -8,6 +8,7 @@ package wire
 
 import (
 	"github.com/angelokurtis/go-laboratory/internal/k8s"
+	"github.com/angelokurtis/go-laboratory/internal/kustomize"
 	zap2 "github.com/angelokurtis/go-laboratory/internal/zap"
 	"github.com/angelokurtis/go-laboratory/internal/zapr"
 	"github.com/go-logr/logr"
@@ -42,4 +43,11 @@ func DynamicClient() (dynamic.Interface, error) {
 	config := k8s.NewConfig()
 	dynamicInterface := k8s.NewDynamicClient(config)
 	return dynamicInterface, nil
+}
+
+func KustomizeClient() (*kustomize.Client, error) {
+	fileSystem := kustomize.NewFileSystem()
+	kustomizer := kustomize.NewKustomizer()
+	client := kustomize.NewClient(fileSystem, kustomizer)
+	return client, nil
 }
