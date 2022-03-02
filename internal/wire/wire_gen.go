@@ -13,6 +13,8 @@ import (
 	"github.com/angelokurtis/go-laboratory/internal/zapr"
 	"github.com/go-logr/logr"
 	"go.uber.org/zap"
+	"k8s.io/apimachinery/pkg/api/meta"
+	"k8s.io/cli-runtime/pkg/resource"
 	"k8s.io/client-go/dynamic"
 )
 
@@ -45,9 +47,52 @@ func DynamicClient() (dynamic.Interface, error) {
 	return dynamicInterface, nil
 }
 
+func DynamicClientAndMapper() (*dynamicClientAndMapper, error) {
+	config := k8s.NewConfig()
+	dynamicInterface := k8s.NewDynamicClient(config)
+	restMapper, err := k8s.NewDynamicRESTMapper(config)
+	if err != nil {
+		return nil, err
+	}
+	wireDynamicClientAndMapper := &dynamicClientAndMapper{
+		Dynamic:    dynamicInterface,
+		RESTMapper: restMapper,
+	}
+	return wireDynamicClientAndMapper, nil
+}
+
 func KustomizeClient() (*kustomize.Client, error) {
 	fileSystem := kustomize.NewFileSystem()
 	kustomizer := kustomize.NewKustomizer()
 	client := kustomize.NewClient(fileSystem, kustomizer)
 	return client, nil
+}
+
+func RESTClientAndRESTMapping() (*clientAndMapping, error) {
+	config := k8s.NewConfig()
+	restClient, err := k8s.NewRESTClient(config)
+	if err != nil {
+		return nil, err
+	}
+	restMapper, err := k8s.NewDynamicRESTMapper(config)
+	if err != nil {
+		return nil, err
+	}
+	wireClientAndMapping := &clientAndMapping{
+		RESTClient: restClient,
+		RESTMapper: restMapper,
+	}
+	return wireClientAndMapping, nil
+}
+
+// injectors.go:
+
+type dynamicClientAndMapper struct {
+	Dynamic    dynamic.Interface
+	RESTMapper meta.RESTMapper
+}
+
+type clientAndMapping struct {
+	RESTClient resource.RESTClient
+	RESTMapper meta.RESTMapper
 }

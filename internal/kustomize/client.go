@@ -40,6 +40,7 @@ func (c *Client) GenerateConfigMap(dir string, generator *ConfigMapGenerator) er
 	if err != nil {
 		return errors.Wrap(err, "config map generation failed")
 	}
+	_ = yml
 
 	return nil
 }
