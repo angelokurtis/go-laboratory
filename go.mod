@@ -6,7 +6,9 @@ require (
 	github.com/angelokurtis/go-tracing v1.0.1
 	github.com/go-logr/logr v1.2.2
 	github.com/go-logr/zapr v1.2.2
+	github.com/gobwas/glob v0.2.3
 	github.com/google/wire v0.5.0
+	github.com/hashicorp/go-cleanhttp v0.5.2
 	github.com/hashicorp/go-getter v1.5.11
 	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.26.1
@@ -16,6 +18,7 @@ require (
 	k8s.io/apimachinery v0.23.4
 	k8s.io/cli-runtime v0.23.4
 	k8s.io/client-go v0.23.4
+	moul.io/http2curl v1.0.0
 	sigs.k8s.io/controller-runtime v0.11.0
 	sigs.k8s.io/kustomize/api v0.11.2
 	sigs.k8s.io/kustomize/kyaml v0.13.3
@@ -37,7 +40,6 @@ require (
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
 	github.com/go-openapi/jsonreference v0.19.5 // indirect
 	github.com/go-openapi/swag v0.19.14 // indirect
-	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
@@ -47,7 +49,6 @@ require (
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/googleapis/gax-go/v2 v2.0.5 // indirect
 	github.com/googleapis/gnostic v0.5.5 // indirect
-	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-safetemp v1.0.0 // indirect
 	github.com/hashicorp/go-version v1.1.0 // indirect
 	github.com/imdario/mergo v0.3.12 // indirect
