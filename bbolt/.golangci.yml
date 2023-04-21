@@ -1,0 +1,6 @@
+run:
+  timeout: 5m
+  skip-files:
+    - wire.go
+    - wire_gen.go
+    - providers.go
