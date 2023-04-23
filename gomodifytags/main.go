@@ -12,35 +12,69 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
+	"golang.org/x/exp/slog"
+	"golang.org/x/mod/modfile"
 )
-
-// This is a tests
-type Kurtis interface {
-	// +kubebuilder:validation:Maximum=100
-	FindByID()
-}
 
 func main() {
 	path := "/home/kurtis/wrkspc/github.com/angelokurtis/go-rhonline"
-	directories, err := listDirectories(path)
+	module, err := GetModuleFromPath(path)
+	dieIfErr(err)
+	_ = module
+
+	abs, err := filepath.Abs(path)
+	dieIfErr(err)
+
+	directories, err := listDirectories(abs)
 	dieIfErr(err)
 
 	fset := token.NewFileSet()
-	filter := func(info fs.FileInfo) bool { return true }
 
 	for _, directory := range directories {
+		filter := func(info fs.FileInfo) bool { return true }
 		pkgs, err := parser.ParseDir(fset, directory, filter, parser.ParseComments)
 		dieIfErr(errors.WithStack(err))
-		_ = pkgs
-		//
-		// 	for _, pkg := range pkgs {
-		// 		slog.Info("", slog.String("directory", directory), slog.String("pkg", pkg.Name))
-		//
-		// 		for _, file := range pkg.Files {
-		// 			ast.Inspect(file, InspectNode)
-		// 		}
-		// 	}
+
+		for _, pkg := range pkgs {
+			dir := strings.Replace(directory, abs, module, 1)
+			last := GetLastPackage(dir)
+			if last != pkg.Name {
+				slog.Info("", slog.String("pkg", dir), slog.String("alias", pkg.Name))
+				// slog.Info("", slog.String("directory", directory), slog.String("pkg", dir), slog.String("alias", pkg.Name))
+			} else {
+				slog.Info("", slog.String("pkg", dir))
+				// slog.Info("", slog.String("directory", directory), slog.String("pkg", dir))
+			}
+
+			for _, file := range pkg.Files {
+				_ = file
+				// file.Name
+				// ast.Inspect(file, InspectNode)
+			}
+		}
 	}
+}
+
+func GetLastPackage(pkg string) string {
+	// Split the string into substrings based on "/"
+	parts := strings.Split(pkg, "/")
+
+	// Get the last substring from the array
+	return parts[len(parts)-1]
+}
+
+func GetModuleFromPath(path string) (string, error) {
+	modContent, err := os.ReadFile(filepath.Join(path, "go.mod"))
+	if err != nil {
+		return "", err
+	}
+
+	modFile, err := modfile.Parse("go.mod", modContent, nil)
+	if err != nil {
+		return "", err
+	}
+
+	return modFile.Module.Mod.Path, nil
 }
 
 func InspectNode(n ast.Node) bool {
