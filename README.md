@@ -9,6 +9,9 @@ The repository is organized into folders for each project or experiment, with a 
 
 - **[bbolt](bbolt)**: a simple key-value store implementation in Go, where [bbolt](https://github.com/etcd-io/bbolt) is
   used as the embedded database engine.
+- **[config](config)**: aims to test the capabilities of the [caarlos0/env](https://github.com/caarlos0/env)
+  and [go-playground/validator](https://github.com/go-playground/validator) libraries in loading and validating
+  configurations from environment variables in a Go-based application.
 - **[diskv](diskv)**: an implementation of a key-value store in Go that is based on file storage, utilizing
   the [diskv](https://github.com/peterbourgon/diskv) library.
 
