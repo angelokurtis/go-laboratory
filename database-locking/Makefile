@@ -18,13 +18,19 @@ format: goimports-reviser gofumpt wsl ## Reformat Go code.
 	$(WSL) -fix ./...
 
 .PHONY: generete
-generete: wire ## Generate Go code.
+generete: wire sqlc ## Generate Go code.
 	$(WIRE) ./...
+	$(SQLC) generate
 
 WIRE = $(shell pwd)/bin/wire
 .PHONY: wire
 wire: ## Download wire locally if necessary.
 	$(call go-get-tool,$(WIRE), github.com/google/wire/cmd/wire,v0.5.1-0.20220620021424-0675cdc9191c)
+
+SQLC = $(shell pwd)/bin/sqlc
+.PHONY: sqlc
+sqlc: ## Download sqlc locally if necessary.
+	$(call go-get-tool,$(SQLC), github.com/sqlc-dev/sqlc/cmd/sqlc,v1.21.0)
 
 GOIMPORTS_REVISER = $(shell pwd)/bin/goimports-reviser
 .PHONY: goimports-reviser

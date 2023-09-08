@@ -8,11 +8,13 @@ import (
 
 	"github.com/google/wire"
 
+	"github.com/angelokurtis/go-laboratory/database-locking/internal/metrics"
 	"github.com/angelokurtis/go-laboratory/database-locking/internal/mysql"
 	"github.com/angelokurtis/go-laboratory/database-locking/internal/persistence"
 )
 
 var providers = wire.NewSet(
+	metrics.NewHandler,
 	mysql.NewDB,
 	persistence.New,
 	wire.Struct(new(X), "*"),

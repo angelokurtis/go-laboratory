@@ -65,7 +65,7 @@ func run() error {
 		return errors.WithStack(err)
 	}
 
-	log.Printf("total of %d rows affected \n", rowsAffected)
+	log.Printf("%d rows have been impacted in total.\n", rowsAffected)
 
 	if err = tx.Commit(); err != nil {
 		return errors.WithStack(err)
