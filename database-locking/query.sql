@@ -9,7 +9,7 @@ SELECT *
 FROM account
 WHERE username = ? LIMIT 1;
 
--- name: UpdateAccountBalance :execresult
+-- name: UpdateAccountBalance :exec
 UPDATE account
 SET balance = ?,
     version = version + 1

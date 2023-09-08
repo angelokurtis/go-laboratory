@@ -51,7 +51,7 @@ func (q *Queries) GetAccountAndLockForUpdates(ctx context.Context, username stri
 	return i, err
 }
 
-const updateAccountBalance = `-- name: UpdateAccountBalance :execresult
+const updateAccountBalance = `-- name: UpdateAccountBalance :exec
 UPDATE account
 SET balance = ?,
     version = version + 1
@@ -63,8 +63,9 @@ type UpdateAccountBalanceParams struct {
 	ID      int64
 }
 
-func (q *Queries) UpdateAccountBalance(ctx context.Context, arg UpdateAccountBalanceParams) (sql.Result, error) {
-	return q.db.ExecContext(ctx, updateAccountBalance, arg.Balance, arg.ID)
+func (q *Queries) UpdateAccountBalance(ctx context.Context, arg UpdateAccountBalanceParams) error {
+	_, err := q.db.ExecContext(ctx, updateAccountBalance, arg.Balance, arg.ID)
+	return err
 }
 
 const updateAccountBalanceVersion = `-- name: UpdateAccountBalanceVersion :execresult

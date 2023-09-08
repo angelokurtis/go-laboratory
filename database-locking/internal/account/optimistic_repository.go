@@ -2,7 +2,6 @@ package account
 
 import (
 	"context"
-	"log"
 
 	"github.com/pkg/errors"
 
@@ -42,8 +41,6 @@ func (o *OptimisticRepository) Deposit(ctx context.Context, username string, amo
 	if rowsAffected == 0 {
 		return errors.WithStack(new(ZeroRowsAffectedError))
 	}
-
-	log.Printf("%d rows have been impacted in total.\n", rowsAffected)
 
 	return nil
 }

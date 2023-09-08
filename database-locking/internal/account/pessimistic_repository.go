@@ -3,7 +3,6 @@ package account
 import (
 	"context"
 	"database/sql"
-	"log"
 
 	"github.com/pkg/errors"
 
@@ -36,20 +35,12 @@ func (p *PessimisticRepository) Deposit(ctx context.Context, username string, am
 
 	account.Balance += amount
 
-	res, err := qtx.UpdateAccountBalance(ctx, persistence.UpdateAccountBalanceParams{
+	if err = qtx.UpdateAccountBalance(ctx, persistence.UpdateAccountBalanceParams{
 		ID:      account.ID,
 		Balance: account.Balance,
-	})
-	if err != nil {
+	}); err != nil {
 		return errors.WithStack(err)
 	}
-
-	rowsAffected, err := res.RowsAffected()
-	if err != nil {
-		return errors.WithStack(err)
-	}
-
-	log.Printf("%d rows have been impacted in total.\n", rowsAffected)
 
 	if err = tx.Commit(); err != nil {
 		return errors.WithStack(err)
