@@ -8,6 +8,7 @@ require (
 	github.com/google/wire v0.5.1-0.20220620021424-0675cdc9191c
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.16.0
+	go.uber.org/automaxprocs v1.5.3
 )
 
 require (

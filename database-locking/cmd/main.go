@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/pkg/errors"
+	_ "go.uber.org/automaxprocs"
 
 	"github.com/angelokurtis/go-laboratory/database-locking/internal/persistence"
 )
