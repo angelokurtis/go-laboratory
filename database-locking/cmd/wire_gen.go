@@ -8,10 +8,15 @@ package main
 
 import (
 	"database/sql"
+	"github.com/angelokurtis/go-laboratory/database-locking/internal/account"
 	"github.com/angelokurtis/go-laboratory/database-locking/internal/metrics"
 	"github.com/angelokurtis/go-laboratory/database-locking/internal/mysql"
 	"github.com/angelokurtis/go-laboratory/database-locking/internal/persistence"
 	"github.com/google/wire"
+)
+
+import (
+	_ "go.uber.org/automaxprocs"
 )
 
 // Injectors from wire.go:
@@ -34,7 +39,7 @@ func initialize() (*X, func(), error) {
 
 // wire.go:
 
-var providers = wire.NewSet(metrics.NewHandler, mysql.NewDB, persistence.New, wire.Struct(new(X), "*"), wire.Bind(new(persistence.DBTX), new(*sql.DB)))
+var providers = wire.NewSet(account.NewOptimisticRepository, account.NewPessimisticRepository, metrics.NewHandler, mysql.NewDB, persistence.New, wire.Struct(new(X), "*"), wire.Bind(new(persistence.DBTX), new(*sql.DB)))
 
 type X struct {
 	DB      *sql.DB

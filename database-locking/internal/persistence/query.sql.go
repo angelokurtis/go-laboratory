@@ -10,11 +10,31 @@ import (
 	"database/sql"
 )
 
+const getAccount = `-- name: GetAccount :one
+SELECT id, username, balance, version
+FROM account
+WHERE username = ? LIMIT 1
+`
+
+func (q *Queries) GetAccount(ctx context.Context, username string) (Account, error) {
+	row := q.db.QueryRowContext(ctx, getAccount, username)
+
+	var i Account
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Balance,
+		&i.Version,
+	)
+
+	return i, err
+}
+
 const getAccountAndLockForUpdates = `-- name: GetAccountAndLockForUpdates :one
 SELECT id, username, balance, version
 FROM account
-WHERE username = ?
-LIMIT 1 FOR UPDATE
+WHERE username = ? LIMIT 1
+FOR UPDATE
 `
 
 func (q *Queries) GetAccountAndLockForUpdates(ctx context.Context, username string) (Account, error) {
@@ -45,4 +65,22 @@ type UpdateAccountBalanceParams struct {
 
 func (q *Queries) UpdateAccountBalance(ctx context.Context, arg UpdateAccountBalanceParams) (sql.Result, error) {
 	return q.db.ExecContext(ctx, updateAccountBalance, arg.Balance, arg.ID)
+}
+
+const updateAccountBalanceVersion = `-- name: UpdateAccountBalanceVersion :execresult
+UPDATE account
+SET balance = ?,
+    version = version + 1
+WHERE id = ?
+  AND version = ?
+`
+
+type UpdateAccountBalanceVersionParams struct {
+	Balance float64
+	ID      int64
+	Version int32
+}
+
+func (q *Queries) UpdateAccountBalanceVersion(ctx context.Context, arg UpdateAccountBalanceVersionParams) (sql.Result, error) {
+	return q.db.ExecContext(ctx, updateAccountBalanceVersion, arg.Balance, arg.ID, arg.Version)
 }
