@@ -6,7 +6,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"dev/labs/database-locking/internal/persistence"
+	"github.com/angelokurtis/go-laboratory/database-locking/internal/persistence"
 )
 
 func main() {

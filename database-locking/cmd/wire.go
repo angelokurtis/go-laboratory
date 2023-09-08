@@ -8,8 +8,8 @@ import (
 
 	"github.com/google/wire"
 
-	"dev/labs/database-locking/internal/mysql"
-	"dev/labs/database-locking/internal/persistence"
+	"github.com/angelokurtis/go-laboratory/database-locking/internal/mysql"
+	"github.com/angelokurtis/go-laboratory/database-locking/internal/persistence"
 )
 
 var providers = wire.NewSet(

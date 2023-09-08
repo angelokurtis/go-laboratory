@@ -8,8 +8,8 @@ package main
 
 import (
 	"database/sql"
-	"dev/labs/database-locking/internal/mysql"
-	"dev/labs/database-locking/internal/persistence"
+	"github.com/angelokurtis/go-laboratory/database-locking/internal/mysql"
+	"github.com/angelokurtis/go-laboratory/database-locking/internal/persistence"
 	"github.com/google/wire"
 )
 
