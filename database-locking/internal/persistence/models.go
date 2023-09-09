@@ -9,6 +9,6 @@ import ()
 type Account struct {
 	ID       int64
 	Username string
-	Balance  float64
+	Balance  string
 	Version  int32
 }

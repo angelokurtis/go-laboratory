@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/pkg/errors"
+	"github.com/shopspring/decimal"
 
 	"github.com/angelokurtis/go-laboratory/database-locking/internal/persistence"
 )
@@ -22,11 +23,16 @@ func (o *OptimisticRepository) Deposit(ctx context.Context, username string, amo
 		return errors.WithStack(err)
 	}
 
-	account.Balance += amount
+	current, err := decimal.NewFromString(account.Balance)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	updated := current.Add(decimal.NewFromFloat(amount))
 
 	res, err := o.queries.UpdateAccountBalanceVersion(ctx, persistence.UpdateAccountBalanceVersionParams{
 		ID:      account.ID,
-		Balance: account.Balance,
+		Balance: updated.String(),
 		Version: account.Version,
 	})
 	if err != nil {

@@ -59,7 +59,7 @@ WHERE id = ?
 `
 
 type UpdateAccountBalanceParams struct {
-	Balance float64
+	Balance string
 	ID      int64
 }
 
@@ -77,7 +77,7 @@ WHERE id = ?
 `
 
 type UpdateAccountBalanceVersionParams struct {
-	Balance float64
+	Balance string
 	ID      int64
 	Version int32
 }

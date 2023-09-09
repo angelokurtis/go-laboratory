@@ -5,6 +5,7 @@ import (
 	"database/sql"
 
 	"github.com/pkg/errors"
+	"github.com/shopspring/decimal"
 
 	"github.com/angelokurtis/go-laboratory/database-locking/internal/persistence"
 )
@@ -33,11 +34,16 @@ func (p *PessimisticRepository) Deposit(ctx context.Context, username string, am
 		return errors.WithStack(err)
 	}
 
-	account.Balance += amount
+	current, err := decimal.NewFromString(account.Balance)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	updated := current.Add(decimal.NewFromFloat(amount))
 
 	if err = qtx.UpdateAccountBalance(ctx, persistence.UpdateAccountBalanceParams{
 		ID:      account.ID,
-		Balance: account.Balance,
+		Balance: updated.String(),
 	}); err != nil {
 		return errors.WithStack(err)
 	}
