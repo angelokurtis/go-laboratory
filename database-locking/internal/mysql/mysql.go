@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log/slog"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/pkg/errors"
@@ -14,6 +15,11 @@ func NewDB() (*sql.DB, func(), error) {
 	if err != nil {
 		return nil, func() {}, errors.WithStack(err)
 	}
+
+	db.SetMaxOpenConns(10)
+	db.SetMaxIdleConns(10)
+	db.SetConnMaxIdleTime(1 * time.Minute)
+	db.SetConnMaxLifetime(30 * time.Minute)
 
 	cleanup := func() {
 		if cerr := db.Close(); cerr != nil {
