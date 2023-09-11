@@ -7,7 +7,6 @@
 package main
 
 import (
-	"database/sql"
 	"github.com/angelokurtis/go-laboratory/database-locking/internal/account"
 	"github.com/angelokurtis/go-laboratory/database-locking/internal/metrics"
 	"github.com/angelokurtis/go-laboratory/database-locking/internal/mysql"
@@ -16,32 +15,54 @@ import (
 )
 
 import (
+	_ "github.com/angelokurtis/go-laboratory/database-locking/internal/logging"
 	_ "go.uber.org/automaxprocs"
 )
 
 // Injectors from wire.go:
 
-func initialize() (*X, func(), error) {
-	db, err := mysql.NewDB()
+func initialize() (account.Repository, func(), error) {
+	db, cleanup, err := mysql.NewDB()
 	if err != nil {
 		return nil, nil, err
 	}
 
 	queries := persistence.New(db)
-	x := &X{
-		DB:      db,
-		Queries: queries,
+	defaultRepository := account.NewDefaultRepository(queries)
+
+	return defaultRepository, func() {
+		cleanup()
+	}, nil
+}
+
+func initializeOptimistic() (account.Repository, func(), error) {
+	db, cleanup, err := mysql.NewDB()
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return x, func() {
+	queries := persistence.New(db)
+	optimisticRepository := account.NewOptimisticRepository(queries)
+
+	return optimisticRepository, func() {
+		cleanup()
+	}, nil
+}
+
+func initializePessimistic() (account.Repository, func(), error) {
+	db, cleanup, err := mysql.NewDB()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	queries := persistence.New(db)
+	pessimisticRepository := account.NewPessimisticRepository(db, queries)
+
+	return pessimisticRepository, func() {
+		cleanup()
 	}, nil
 }
 
 // wire.go:
 
-var providers = wire.NewSet(account.NewOptimisticRepository, account.NewPessimisticRepository, metrics.NewHandler, mysql.NewDB, persistence.New, wire.Struct(new(X), "*"), wire.Bind(new(persistence.DBTX), new(*sql.DB)))
-
-type X struct {
-	DB      *sql.DB
-	Queries *persistence.Queries
-}
+var providers = wire.NewSet(account.NewDefaultRepository, account.NewOptimisticRepository, account.NewPessimisticRepository, metrics.NewHandler, mysql.NewDB, persistence.New)

@@ -7,31 +7,49 @@ import (
 	"database/sql"
 
 	"github.com/google/wire"
+	_ "go.uber.org/automaxprocs"
 
 	"github.com/angelokurtis/go-laboratory/database-locking/internal/account"
+	_ "github.com/angelokurtis/go-laboratory/database-locking/internal/logging"
 	"github.com/angelokurtis/go-laboratory/database-locking/internal/metrics"
 	"github.com/angelokurtis/go-laboratory/database-locking/internal/mysql"
 	"github.com/angelokurtis/go-laboratory/database-locking/internal/persistence"
 )
 
 var providers = wire.NewSet(
+	account.NewDefaultRepository,
 	account.NewOptimisticRepository,
 	account.NewPessimisticRepository,
 	metrics.NewHandler,
 	mysql.NewDB,
 	persistence.New,
-	wire.Struct(new(X), "*"),
-	wire.Bind(new(persistence.DBTX), new(*sql.DB)),
 )
 
-type X struct {
-	DB      *sql.DB
-	Queries *persistence.Queries
-}
-
-func initialize() (*X, func(), error) {
+func initialize() (account.Repository, func(), error) {
 	wire.Build(
 		providers,
+		wire.Bind(new(account.Repository), new(*account.DefaultRepository)),
+		wire.Bind(new(persistence.DBTX), new(*sql.DB)),
+	)
+
+	return nil, nil, nil
+}
+
+func initializeOptimistic() (account.Repository, func(), error) {
+	wire.Build(
+		providers,
+		wire.Bind(new(account.Repository), new(*account.OptimisticRepository)),
+		wire.Bind(new(persistence.DBTX), new(*sql.DB)),
+	)
+
+	return nil, nil, nil
+}
+
+func initializePessimistic() (account.Repository, func(), error) {
+	wire.Build(
+		providers,
+		wire.Bind(new(account.Repository), new(*account.PessimisticRepository)),
+		wire.Bind(new(persistence.DBTX), new(*sql.DB)),
 	)
 
 	return nil, nil, nil
