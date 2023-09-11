@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log/slog"
 	"sync"
 	"sync/atomic"
@@ -41,7 +40,13 @@ func defaultAction(cCtx *cli.Context) error {
 		}()
 	}
 	wg.Wait()
-	slog.Info(fmt.Sprintf("During %v executions, we had %v errors, even after retrying %v times in just %v.", executions, errs, retries, durafmt.ParseShort(time.Since(start))))
+	slog.Info("Done!",
+		slog.Int("executions", executions),
+		slog.Uint64("errors", errs),
+		slog.Int("success", executions-int(errs)),
+		slog.Uint64("retries", retries),
+		slog.String("duration", durafmt.ParseShort(time.Since(start)).String()),
+	)
 
 	return nil
 }

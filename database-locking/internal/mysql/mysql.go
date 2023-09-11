@@ -21,6 +21,10 @@ func NewDB() (*sql.DB, func(), error) {
 	db.SetConnMaxIdleTime(1 * time.Minute)
 	db.SetConnMaxLifetime(30 * time.Minute)
 
+	if err = db.Ping(); err != nil {
+		return nil, func() {}, errors.WithStack(err)
+	}
+
 	cleanup := func() {
 		if cerr := db.Close(); cerr != nil {
 			slog.Warn("an error happened while cleaning up",

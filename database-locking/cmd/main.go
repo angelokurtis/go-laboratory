@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log/slog"
 	"os"
 
@@ -48,7 +49,7 @@ func main() {
 	if err := app.Run(os.Args); err != nil {
 		if sterr, ok := err.(stackTracer); ok {
 			st := sterr.StackTrace()
-			slog.Error("%s%+v\n", err.Error(), st[:len(st)-2])
+			slog.Error(fmt.Sprintf("%s%+v\n", err.Error(), st[:len(st)-2]))
 		} else {
 			slog.Error(err.Error())
 		}

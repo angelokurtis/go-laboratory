@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log/slog"
 	"sync"
 	"sync/atomic"
@@ -43,9 +42,9 @@ func optimisticAction(cCtx *cli.Context) error {
 				retry.OnRetry(func(u uint, err error) {
 					atomic.AddUint64(&retries, 1)
 				}),
-				retry.Delay(1*time.Second),
+				retry.MaxJitter(1*time.Second),
 				retry.DelayType(retry.RandomDelay),
-				retry.Attempts(5),
+				retry.Attempts(10),
 			)
 			if rerr != nil {
 				atomic.AddUint64(&errs, 1)
@@ -53,7 +52,13 @@ func optimisticAction(cCtx *cli.Context) error {
 		}()
 	}
 	wg.Wait()
-	slog.Info(fmt.Sprintf("During %v executions, we had %v errors, even after retrying %v times in just %v.", executions, errs, retries, durafmt.ParseShort(time.Since(start))))
+	slog.Info("Done!",
+		slog.Int("executions", executions),
+		slog.Uint64("errors", errs),
+		slog.Int("success", executions-int(errs)),
+		slog.Uint64("retries", retries),
+		slog.String("duration", durafmt.ParseShort(time.Since(start)).String()),
+	)
 
 	return nil
 }
