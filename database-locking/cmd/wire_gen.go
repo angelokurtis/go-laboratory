@@ -11,6 +11,7 @@ import (
 	"github.com/angelokurtis/go-laboratory/database-locking/internal/metrics"
 	"github.com/angelokurtis/go-laboratory/database-locking/internal/mysql"
 	"github.com/angelokurtis/go-laboratory/database-locking/internal/persistence"
+	"github.com/angelokurtis/go-laboratory/database-locking/internal/redis"
 	"github.com/google/wire"
 )
 
@@ -63,6 +64,23 @@ func initializePessimistic() (account.Repository, func(), error) {
 	}, nil
 }
 
+func initializeDistributed() (account.Repository, func(), error) {
+	db, cleanup, err := mysql.NewDB()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	queries := persistence.New(db)
+	client := redis.NewClient()
+	pool := redis.NewPool(client)
+	redsync := redis.NewRedsync(pool)
+	distributedRepository := account.NewDistributedRepository(queries, redsync)
+
+	return distributedRepository, func() {
+		cleanup()
+	}, nil
+}
+
 // wire.go:
 
-var providers = wire.NewSet(account.NewDefaultRepository, account.NewOptimisticRepository, account.NewPessimisticRepository, metrics.NewHandler, mysql.NewDB, persistence.New)
+var providers = wire.NewSet(account.NewDefaultRepository, account.NewDistributedRepository, account.NewOptimisticRepository, account.NewPessimisticRepository, metrics.NewHandler, mysql.NewDB, persistence.New, redis.NewClient, redis.NewPool, redis.NewRedsync)

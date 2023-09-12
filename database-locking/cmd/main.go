@@ -38,6 +38,7 @@ func main() {
 				Subcommands: []*cli.Command{
 					{Name: "optimistic", Action: optimisticAction, Flags: flags},
 					{Name: "pessimistic", Action: pessimisticAction, Flags: flags},
+					{Name: "distributed", Action: distributedAction, Flags: flags},
 				},
 				Flags: flags,
 			},
