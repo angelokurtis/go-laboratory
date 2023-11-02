@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"path/filepath"
@@ -11,7 +12,6 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
 
-	"github.com/angelokurtis/go-laboratory/goverter/converter"
 	"github.com/angelokurtis/go-laboratory/goverter/pod"
 )
 
@@ -45,9 +45,15 @@ func main() {
 	fmt.Printf("There are %d pods in the cluster\n", len(pods.Items))
 
 	// gets the Pod object from the k8s library and converts it into my custom domain object
-	var podConverter pod.Converter = new(converter.Pod)
 	for _, po := range pods.Items {
-		converted := podConverter.Convert(po)
+		converted := pod.FromK8s(po)
 		fmt.Printf("the pod %q has been successfully converted\n", converted.Metadata.Name)
+
+		bytes, err := json.Marshal(pod.ToK8s(converted))
+		if err != nil {
+			panic(err.Error())
+		}
+
+		fmt.Println(string(bytes))
 	}
 }
